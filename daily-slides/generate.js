@@ -33,8 +33,8 @@ async function fetchRegionalPrices() {
   for (const r of REGIONS) {
     try {
       const data = await fetchSignal(r);
-      if (data && data.current) {
-        results.push({ region: data.region, price: data.current, change: data.weeklyChange });
+      if (data && data.retailPrice) {
+        results.push({ region: data.region, price: data.retailPrice, change: data.retailWeekChange });
       }
     } catch (e) {
       // skip failed regions
@@ -190,7 +190,7 @@ async function generateSlide2(usSignal, bgPath) {
   });
 
   // Big price
-  const priceStr = `$${usSignal.current.toFixed(2)}`;
+  const priceStr = `$${usSignal.retailPrice.toFixed(2)}`;
   drawTextWithOutline(ctx, priceStr, centerX, img.height * 0.27, Math.round(img.width * 0.14), {
     fillColor: '#FFFFFF',
   });
@@ -200,10 +200,10 @@ async function generateSlide2(usSignal, bgPath) {
   });
 
   // Weekly change
-  const changeDir = usSignal.weeklyChange > 0 ? 'UP' : 'DOWN';
-  const changeCents = Math.abs(usSignal.weeklyChange * 100).toFixed(0);
-  const changeColor = usSignal.weeklyChange > 0 ? colors.priceUp : colors.priceDown;
-  const arrow = usSignal.weeklyChange > 0 ? '↑' : '↓';
+  const changeDir = usSignal.retailWeekChange > 0 ? 'UP' : 'DOWN';
+  const changeCents = Math.abs(usSignal.retailWeekChange * 100).toFixed(0);
+  const changeColor = usSignal.retailWeekChange > 0 ? colors.priceUp : colors.priceDown;
+  const arrow = usSignal.retailWeekChange > 0 ? '↑' : '↓';
   const changeText = `${arrow} ${changeCents}¢ ${changeDir} THIS WEEK`;
 
   drawTextWithOutline(ctx, changeText, centerX, img.height * 0.52, Math.round(img.width * 0.065), {
@@ -363,7 +363,7 @@ async function main() {
     console.log('(Using mock WAIT signal for preview)');
   }
   
-  console.log(`Signal: ${usSignal.signal} | $${usSignal.current}/gal | ${usSignal.trend}`);
+  console.log(`Signal: ${usSignal.signal} | $${usSignal.retailPrice}/gal | ${usSignal.spotDirection}`);
 
   console.log('Fetching regional prices...');
   const regional = await fetchRegionalPrices();
@@ -437,11 +437,11 @@ async function main() {
   // Price
   ogCtx.font = 'bold 64px Arial';
   ogCtx.fillStyle = '#FFFFFF';
-  ogCtx.fillText(`$${usSignal.current.toFixed(2)}/gal`, 600, 310);
+  ogCtx.fillText(`$${usSignal.retailPrice.toFixed(2)}/gal`, 600, 310);
   
   // Change
-  const ogChangeDir = usSignal.weeklyChange > 0 ? '↑' : '↓';
-  const ogChangeCents = Math.abs(usSignal.weeklyChange * 100).toFixed(0);
+  const ogChangeDir = usSignal.retailWeekChange > 0 ? '↑' : '↓';
+  const ogChangeCents = Math.abs(usSignal.retailWeekChange * 100).toFixed(0);
   ogCtx.font = 'bold 36px Arial';
   ogCtx.fillStyle = ogColors.accent;
   ogCtx.fillText(`${ogChangeDir} ${ogChangeCents}¢ this week`, 600, 380);
@@ -480,7 +480,7 @@ async function main() {
 
   console.log('Sending to Telegram...');
   const isFillUp = usSignal.signal === 'FILL_UP';
-  const caption = `⛽ Gas Oracle — ${formatDate()}\n${isFillUp ? '🟢 FILL UP TODAY' : '🟡 WAIT'} | $${usSignal.current.toFixed(2)}/gal | ${usSignal.trend}`;
+  const caption = `⛽ Gas Oracle — ${formatDate()}\n${isFillUp ? '🟢 FILL UP TODAY' : '🟡 WAIT'} | $${usSignal.retailPrice.toFixed(2)}/gal | ${usSignal.spotDirection}`;
 
   const result = await sendMediaGroupToTelegram(slides, caption);
   if (result.ok) {
