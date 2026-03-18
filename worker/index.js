@@ -567,7 +567,7 @@ export default {
         if (entry) history.push(entry);
       }
       return new Response(JSON.stringify({ count: history.length, data: history }), {
-        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' },
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=86400' },
       });
     }
 
@@ -607,7 +607,7 @@ export default {
       const ogImg = await env.KV.get('og-image', { type: 'arrayBuffer' });
       if (ogImg) {
         return new Response(ogImg, {
-          headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600' },
+          headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' },
         });
       }
       return new Response('No OG image yet', { status: 404 });
@@ -747,7 +747,7 @@ export default {
   <script data-goatcounter="https://gasoracle.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>`, {
-        headers: { 'Content-Type': 'text/html' },
+        headers: { 'Content-Type': 'text/html', 'Cache-Control': 'public, max-age=86400' },
       });
     }
 
