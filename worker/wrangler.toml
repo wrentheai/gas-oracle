@@ -2,7 +2,7 @@ name = "gas-oracle"
 main = "index.js"
 compatibility_date = "2024-01-01"
 
-# BOT_TOKEN set via wrangler secret
+# BOT_TOKEN and EIA_KEY set via wrangler secret (prod) or .dev.vars (local)
 
 [[kv_namespaces]]
 binding = "KV"

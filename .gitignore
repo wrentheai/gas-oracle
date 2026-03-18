@@ -1,4 +1,5 @@
 node_modules/
 daily-slides/output/
 worker/.wrangler/
+worker/.dev.vars
 .DS_Store
