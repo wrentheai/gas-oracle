@@ -1,0 +1,13 @@
+file 'slide-1-final.png'
+duration 3
+file 'slide-2-final.png'
+duration 3
+file 'slide-3-final.png'
+duration 3
+file 'slide-4-final.png'
+duration 3
+file 'slide-5-final.png'
+duration 3
+file 'slide-6-final.png'
+duration 3
+file 'slide-6-final.png'

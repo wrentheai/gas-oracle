@@ -1,0 +1,12 @@
+name = "gas-oracle"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# BOT_TOKEN set via wrangler secret
+
+[[kv_namespaces]]
+binding = "KV"
+id = "cec12f6be0a441cabd5e37de942e249d"
+
+[triggers]
+crons = ["0 * * * *"]

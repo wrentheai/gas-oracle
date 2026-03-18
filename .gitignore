@@ -1,0 +1,4 @@
+node_modules/
+daily-slides/output/
+worker/.wrangler/
+.DS_Store
