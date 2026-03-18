@@ -765,10 +765,10 @@ export default {
 
     // Cache AAA data
     if (aaaData?.current || aaaData?.national) {
-      await env.KV.put('aaa-national', JSON.stringify(aaaData), { expirationTtl: 7200 });
+      await env.KV.put('aaa-national', JSON.stringify(aaaData), { expirationTtl: 90000 });
     }
     if (aaaStates && Object.keys(aaaStates).length > 0) {
-      await env.KV.put('aaa-states', JSON.stringify(aaaStates), { expirationTtl: 7200 });
+      await env.KV.put('aaa-states', JSON.stringify(aaaStates), { expirationTtl: 90000 });
     }
 
     // Generate signal
@@ -777,7 +777,7 @@ export default {
 
     if (analysis) {
       analysis.lastUpdated = new Date().toISOString();
-      await env.KV.put('cached-signal', JSON.stringify(analysis), { expirationTtl: 7200 });
+      await env.KV.put('cached-signal', JSON.stringify(analysis), { expirationTtl: 90000 });
 
       // Save historical data daily
       const today = new Date().toISOString().slice(0, 10);
