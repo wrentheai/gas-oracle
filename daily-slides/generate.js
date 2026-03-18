@@ -488,6 +488,45 @@ async function main() {
   } else {
     console.error('❌ Telegram send failed:', JSON.stringify(result));
   }
+
+  // Generate and send video
+  try {
+    const { execSync } = require('child_process');
+    const videoPath = path.join(outputDir, `gas-oracle-${today}.mp4`);
+    const concatFile = path.join(outputDir, 'concat.txt');
+
+    // Write concat file (each slide 3 seconds)
+    const concatContent = slides.map(s => `file '${s}'\nduration 3`).join('\n') +
+      `\nfile '${slides[slides.length - 1]}'`;
+    fs.writeFileSync(concatFile, concatContent);
+
+    execSync(
+      `ffmpeg -y -f concat -safe 0 -i "${concatFile}" ` +
+      `-vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,fps=30" ` +
+      `-c:v libx264 -pix_fmt yuv420p -crf 23 "${videoPath}"`,
+      { stdio: 'pipe' }
+    );
+
+    console.log('🎬 Video generated, sending to Telegram...');
+    const videoCaption = `⛽ Gas Oracle — ${formatDate()} (video)`;
+    const formData = new FormData();
+    formData.append('chat_id', TELEGRAM_CHAT_ID);
+    formData.append('caption', videoCaption);
+    const videoBlob = new Blob([fs.readFileSync(videoPath)], { type: 'video/mp4' });
+    formData.append('video', videoBlob, path.basename(videoPath));
+    const videoResp = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVideo`, {
+      method: 'POST',
+      body: formData,
+    });
+    const videoResult = await videoResp.json();
+    if (videoResult.ok) {
+      console.log('🎬 Video delivered to Telegram!');
+    } else {
+      console.error('❌ Video send failed:', JSON.stringify(videoResult));
+    }
+  } catch (e) {
+    console.error('❌ Video generation/send failed (non-critical):', e.message);
+  }
 }
 
 main().catch(e => {
