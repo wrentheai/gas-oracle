@@ -527,6 +527,30 @@ async function main() {
   } catch (e) {
     console.error('❌ Video generation/send failed (non-critical):', e.message);
   }
+
+  // Send TikTok caption as a separate message for easy copy-paste
+  const priceDiff = usSignal.retailWeekChange != null
+    ? Math.abs(usSignal.retailWeekChange * 100).toFixed(0)
+    : null;
+  const priceDir = usSignal.retailWeekChange > 0 ? 'jumped' : 'dropped';
+
+  const tiktokCaption = isFillUp
+    ? `⛽ Gas prices just ${priceDir}${priceDiff ? ` ${priceDiff} cents` : ''} this week and wholesale is still climbing -- retail will follow in a few days. Fill up today before it gets worse.\n\nU.S. average: $${usSignal.retailPrice.toFixed(2)}/gal\n\nFollow for daily signals so you never buy gas at the wrong time.\n\n#gasprices #savemoney #gasoline #personalfinance #moneytips #fuelprices #gasoracle`
+    : `⛽ Gas prices ${priceDir}${priceDiff ? ` ${priceDiff} cents` : ''} this week and wholesale is still falling -- hold off if you can.\n\nU.S. average: $${usSignal.retailPrice.toFixed(2)}/gal\n\nFollow for daily signals so you never buy gas at the wrong time.\n\n#gasprices #savemoney #gasoline #personalfinance #moneytips #fuelprices #gasoracle`;
+
+  // Send caption as plain text message
+  const captionMsgResp = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: TELEGRAM_CHAT_ID,
+      text: `📋 TikTok caption (copy-paste):\n\n${tiktokCaption}`,
+    }),
+  });
+  const captionMsgResult = await captionMsgResp.json();
+  if (captionMsgResult.ok) {
+    console.log('📋 TikTok caption sent to Telegram!');
+  }
 }
 
 main().catch(e => {
